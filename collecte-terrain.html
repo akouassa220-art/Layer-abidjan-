@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1a2e1a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Collecte Loyers – Abidjan</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Syne:wght@700;800&display=swap');
+
+    :root {
+      --bg:        #0f1a0f;
+      --surface:   #192619;
+      --border:    #2a3d2a;
+      --accent:    #7cfc5e;
+      --accent-dk: #4db832;
+      --text:      #e8f5e4;
+      --muted:     #7a9470;
+      --error:     #ff6b6b;
+      --success:   #7cfc5e;
+      --radius:    12px;
+      --font-head: 'Syne', sans-serif;
+      --font-body: 'Space Grotesk', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 20px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .header-eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    header h1 {
+      font-family: var(--font-head);
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--text);
+    }
+
+    header h1 span {
+      color: var(--accent);
+    }
+
+    .gps-bar {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+
+    .gps-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+      transition: background 0.3s;
+    }
+    .gps-dot.active { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+    .gps-dot.loading { background: #f0c040; animation: pulse 1s infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .gps-text { font-size: 13px; color: var(--muted); flex: 1; }
+    .gps-text strong { color: var(--text); display: block; font-size: 12px; margin-top: 2px; }
+
+    .gps-btn {
+      font-size: 11px;
+      font-family: var(--font-body);
+      font-weight: 500;
+      background: var(--border);
+      color: var(--text);
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    main { padding: 20px; max-width: 500px; margin: 0 auto; }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+      margin-top: 28px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .field { margin-bottom: 16px; }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 6px;
+      letter-spacing: 0.04em;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15px;
+      padding: 13px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+    }
+
+    textarea { min-height: 80px; resize: vertical; }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a9470' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 38px;
+    }
+
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .loyer-display {
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 16px 14px;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .loyer-display input {
+      background: transparent;
+      border: none;
+      padding: 0;
+      font-size: 28px;
+      font-family: var(--font-head);
+      font-weight: 700;
+      color: var(--accent);
+      width: 100%;
+    }
+
+    .loyer-display input:focus { border: none; }
+    .loyer-display input::placeholder { color: var(--border); }
+
+    .loyer-unit {
+      font-size: 13px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--muted);
+      font-family: var(--font-body);
+      font-size: 13px;
+      padding: 7px 14px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .chip.selected {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--bg);
+      font-weight: 700;
+    }
+
+    .submit-btn {
+      width: 100%;
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      border-radius: var(--radius);
+      font-family: var(--font-head);
+      font-size: 17px;
+      font-weight: 800;
+      padding: 18px;
+      margin-top: 32px;
+      cursor: pointer;
+      letter-spacing: 0.03em;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .submit-btn:active { transform: scale(0.98); }
+    .submit-btn:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 100;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      white-space: nowrap;
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { border-color: var(--success); }
+    .toast.error { border-color: var(--error); }
+
+    .toast-icon { font-size: 18px; }
+
+    .counter {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .counter-label { font-size: 12px; color: var(--muted); }
+    .counter-value { font-family: var(--font-head); font-size: 24px; font-weight: 800; color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-eyebrow">Layer Abidjan · Terrain</div>
+  <h1>Collecte <span>Loyers</span></h1>
+
+  <div class="gps-bar" onclick="getLocation()">
+    <div class="gps-dot" id="gpsDot"></div>
+    <div class="gps-text">
+      Localisation GPS
+      <strong id="gpsText">Appuyer pour localiser</strong>
+    </div>
+    <button class="gps-btn" id="gpsBtn">Localiser</button>
+  </div>
+</header>
+
+<main>
+  <div class="counter">
+    <div class="counter-label">Enregistrements aujourd'hui</div>
+    <div class="counter-value" id="countToday">0</div>
+  </div>
+
+  <!-- LOCALISATION -->
+  <div class="section-label">Localisation</div>
+
+  <div class="field">
+    <label>Commune</label>
+    <select id="commune" onchange="updateQuartiers()">
+      <option value="">Sélectionner une commune</option>
+      <option>Cocody</option>
+      <option>Plateau</option>
+      <option>Adjamé</option>
+      <option>Abobo</option>
+      <option>Yopougon</option>
+      <option>Marcory</option>
+      <option>Treichville</option>
+      <option>Koumassi</option>
+      <option>Port-Bouët</option>
+      <option>Attécoubé</option>
+      <option>Bingerville</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>Quartier</label>
+    <input type="text" id="quartier" placeholder="Ex: Faya, Riviera 2, Angré..." />
+  </div>
+
+  <!-- LOGEMENT -->
+  <div class="section-label">Logement</div>
+
+  <div class="field">
+    <label>Type de logement</label>
+    <div class="chips" id="typeChips">
+      <div class="chip" onclick="selectChip(this, 'type')">Studio</div>
+      <div class="chip" onclick="selectChip(this, 'type')">F1</div>
+      <div class="chip" onclick="selectChip(this, 'type')">F2</div>
+      <div class="chip" onclick="selectChip(this, 'type')">F3</div>
+      <div class="chip" onclick="selectChip(this, 'type')">F4+</div>
+      <div class="chip" onclick="selectChip(this, 'type')">Villa</div>
+      <div class="chip" onclick="selectChip(this, 'type')">Chambre</div>
+    </div>
+  </div>
+
+  <div class="row-2">
+    <div class="field">
+      <label>Superficie (m²)</label>
+      <input type="number" id="superficie" placeholder="Ex: 45" min="5" max="1000" />
+    </div>
+    <div class="field">
+      <label>Nb de pièces</label>
+      <input type="number" id="pieces" placeholder="Ex: 2" min="1" max="20" />
+    </div>
+  </div>
+
+  <div class="field">
+    <label>État du logement</label>
+    <div class="chips" id="etatChips">
+      <div class="chip" onclick="selectChip(this, 'etat')">Neuf</div>
+      <div class="chip" onclick="selectChip(this, 'etat')">Bon état</div>
+      <div class="chip" onclick="selectChip(this, 'etat')">Moyen</div>
+      <div class="chip" onclick="selectChip(this, 'etat')">Vétuste</div>
+    </div>
+  </div>
+
+  <!-- LOYER -->
+  <div class="section-label">Loyer mensuel</div>
+
+  <div class="field">
+    <div class="loyer-display">
+      <input type="number" id="loyer" placeholder="0" min="0" />
+      <span class="loyer-unit">FCFA / mois</span>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Charges incluses ?</label>
+    <div class="chips" id="chargesChips">
+      <div class="chip" onclick="selectChip(this, 'charges')">Oui</div>
+      <div class="chip" onclick="selectChip(this, 'charges')">Non</div>
+    </div>
+  </div>
+
+  <!-- COLLECTEUR -->
+  <div class="section-label">Collecteur</div>
+
+  <div class="field">
+    <label>Votre nom</label>
+    <input type="text" id="collecteur" placeholder="Prénom Nom" />
+  </div>
+
+  <div class="field">
+    <label>Observations (facultatif)</label>
+    <textarea id="observations" placeholder="Accès difficile, proximité marché, bruit..."></textarea>
+  </div>
+
+  <button class="submit-btn" id="submitBtn" onclick="submitForm()">
+    Enregistrer la collecte
+  </button>
+</main>
+
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toastIcon">✓</span>
+  <span id="toastMsg">Enregistrement réussi</span>
+</div>
+
+<script>
+  const SUPABASE_URL = 'https://mwilxnzspieofsyxhytk.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_PT-c-kvXjhgbEReGeCZlDg_ZtR-RjXS';
+
+  let gpsCoords = null;
+  let selectedType = '';
+  let selectedEtat = '';
+  let selectedCharges = '';
+  let countToday = parseInt(localStorage.getItem('countToday') || '0');
+
+  // Vérifier si c'est un nouveau jour
+  const today = new Date().toDateString();
+  const lastDay = localStorage.getItem('lastDay');
+  if (lastDay !== today) {
+    countToday = 0;
+    localStorage.setItem('lastDay', today);
+    localStorage.setItem('countToday', '0');
+  }
+  document.getElementById('countToday').textContent = countToday;
+
+  function selectChip(el, group) {
+    const container = el.closest('.chips');
+    container.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    if (group === 'type') selectedType = el.textContent;
+    if (group === 'etat') selectedEtat = el.textContent;
+    if (group === 'charges') selectedCharges = el.textContent;
+  }
+
+  function getLocation() {
+    const dot = document.getElementById('gpsDot');
+    const text = document.getElementById('gpsText');
+    const btn = document.getElementById('gpsBtn');
+
+    dot.className = 'gps-dot loading';
+    text.textContent = 'Localisation en cours...';
+    btn.textContent = '...';
+
+    if (!navigator.geolocation) {
+      showToast('GPS non disponible sur cet appareil', 'error');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        gpsCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        dot.className = 'gps-dot active';
+        text.textContent = `${gpsCoords.lat.toFixed(5)}, ${gpsCoords.lng.toFixed(5)}`;
+        btn.textContent = '✓ OK';
+      },
+      () => {
+        dot.className = 'gps-dot';
+        text.textContent = 'Échec — réessayer';
+        btn.textContent = 'Retry';
+        showToast('Impossible d\'obtenir la position GPS', 'error');
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }
+
+  function showToast(msg, type = 'success') {
+    const toast = document.getElementById('toast');
+    const icon = document.getElementById('toastIcon');
+    const text = document.getElementById('toastMsg');
+    icon.textContent = type === 'success' ? '✓' : '✕';
+    text.textContent = msg;
+    toast.className = `toast ${type} show`;
+    setTimeout(() => { toast.className = `toast ${type}`; }, 3000);
+  }
+
+  async function submitForm() {
+    const commune = document.getElementById('commune').value;
+    const quartier = document.getElementById('quartier').value.trim();
+    const loyer = parseFloat(document.getElementById('loyer').value);
+    const collecteur = document.getElementById('collecteur').value.trim();
+
+    if (!commune || !quartier) { showToast('Commune et quartier obligatoires', 'error'); return; }
+    if (!selectedType) { showToast('Sélectionner un type de logement', 'error'); return; }
+    if (!loyer || loyer <= 0) { showToast('Saisir un loyer valide', 'error'); return; }
+    if (!collecteur) { showToast('Saisir votre nom', 'error'); return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Envoi en cours...';
+
+    const payload = {
+      quartier_id: null,
+      type_logement: selectedType,
+      superficie: parseFloat(document.getElementById('superficie').value) || null,
+      loyer_mensuel: loyer,
+      date_collecte: new Date().toISOString().split('T')[0],
+      collecteur: collecteur,
+      localisation: gpsCoords
+        ? `POINT(${gpsCoords.lng} ${gpsCoords.lat})`
+        : null
+    };
+
+    // Ajouter les métadonnées dans collecteur
+    const meta = {
+      commune, quartier,
+      etat: selectedEtat,
+      charges: selectedCharges,
+      pieces: document.getElementById('pieces').value || null,
+      observations: document.getElementById('observations').value.trim() || null,
+      gps: gpsCoords
+    };
+    payload.collecteur = `${collecteur} | ${commune} - ${quartier}`;
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/loyers`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok || res.status === 201) {
+        countToday++;
+        localStorage.setItem('countToday', countToday);
+        document.getElementById('countToday').textContent = countToday;
+        showToast('Collecte enregistrée avec succès !', 'success');
+        resetForm();
+      } else {
+        const err = await res.text();
+        console.error(err);
+        showToast('Erreur serveur — vérifier la connexion', 'error');
+      }
+    } catch (e) {
+      showToast('Pas de connexion internet', 'error');
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Enregistrer la collecte';
+  }
+
+  function resetForm() {
+    document.getElementById('commune').value = '';
+    document.getElementById('quartier').value = '';
+    document.getElementById('superficie').value = '';
+    document.getElementById('pieces').value = '';
+    document.getElementById('loyer').value = '';
+    document.getElementById('observations').value = '';
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+    selectedType = ''; selectedEtat = ''; selectedCharges = '';
+  }
+</script>
+</body>
+</html>
